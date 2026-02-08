@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSwan Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f5f7fa;
+            --border-color: #ddd;
+            --text-color: #333;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --translator-btn-bg: #86dbdb;
+            --translator-btn-text: #1c3678;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Page switching */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        /* Header styles */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #1c3678 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .nav-btn-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .translator-section {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 50;
+            max-width: 300px;
+        }
+        
+        .translator-section h4 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .translator-toggle {
+            padding: 8px 15px;
+            background: var(--translator-btn-bg);
+            color: var(--translator-btn-text);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .translator-toggle:hover {
+            background: #76cbcb;
+            transform: translateY(-2px);
+        }
+        
+        /* Form section styles */
+        .form-section {
+            padding: 40px;
+        }
+        
+        .form-title {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .form-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        .website-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .website-prefix {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            min-width: 140px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        
+        .website-input {
+            flex: 1;
+        }
+        
+        .optional-note {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .photo-upload-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px dashed #667eea;
+        }
+        
+        .photo-upload-section h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .photo-dimensions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+        
+        .photo-dimensions p {
+            margin: 0;
+            color: #856404;
+            font-size: 0.9rem;
+        }
+        
+        .photo-dimensions strong {
+            color: #664d03;
+        }
+        
+        .upload-area {
+            border: 2px dashed #adb5bd;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            background: white;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .upload-area p {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .upload-area span {
+            font-size: 0.9rem;
+            color: #999;
+        }
+        
+        .photo-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            min-height: 50px;
+        }
+        
+        .preview-item {
+            position: relative;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(39, 174, 96, 0.3);
+            margin-top: 30px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .footer-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+        
+        .footer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        /* Back office styles */
+        .back-office-content {
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 400px;
+        }
+        
+        .webswan-links-section {
+            background: linear-gradient(135deg, #1c3678 0%, #2c3e50 100%);
+            border-radius: 10px;
+            padding: 35px;
+            margin: 20px 0 40px;
+            color: white;
+            text-align: center;
+        }
+        
+        .webswan-links-section h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .webswan-links-section p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+        }
+        
+        .webswan-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .webswan-btn {
+            display: flex;
+            padding: 16px 24px;
+            background: white;
+            color: #1c3678;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 60px;
+        }
+        
+        .webswan-btn:hover {
+            background: #f0f7ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #86dbdb;
+        }
+        
+        .webswan-btn.pricing {
+            background: linear-gradient(135deg, #ffcc00 0%, #ff9900 100%);
+            color: #1c3678;
+        }
+        
+        .webswan-btn.reviews {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+        
+        .webswan-btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .copy-link-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .copy-link-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .script-section {
+            background: linear-gradient(90deg, #4ad1e0 0%, #4a96e0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            color: white;
+        }
+        
+        .script-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .script-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .script-toggle-btn {
+            background: white;
+            color: #4a96e0;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .script-toggle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .script-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .script-container.visible {
+            display: block;
+        }
+        
+        .script-content {
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        .script-category {
+            margin-bottom: 20px;
+        }
+        
+        .script-category h4 {
+            color: #1c3678;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .ai-collapsible-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 40px 0;
+            border: 2px solid #2196f3;
+        }
+        
+        .ai-collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px;
+            background: #2196f3;
+            color: white;
+            border-radius: 8px;
+        }
+        
+        .ai-collapsible-header:hover {
+            background: #1976d2;
+        }
+        
+        .ai-collapsible-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ai-collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .ai-questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .ai-question-card {
+            background: #f8f9fa;
+            border-left: 4px solid #4caf50;
+            border-radius: 6px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .ai-question-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: #ffffff;
+        }
+        
+        .ai-question-card h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-question-card p {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .states-compliance-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffecb3 100%);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 2px solid #ff9800;
+        }
+        
+        .states-compliance-section h3 {
+            color: #e65100;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .states-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .state-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        
+        .state-card:hover {
+            border-color: #ff9800;
+            transform: translateY(-3px);
+        }
+        
+        .state-compliance-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #ff9800;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .state-compliance-btn:hover {
+            background: #f57c00;
+        }
+        
+        /* Translator Modal */
+        .translator-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .translator-modal.active {
+            display: flex;
+        }
+        
+        .translator-modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .translator-header {
+            background: linear-gradient(135deg, #86dbdb 0%, #1c3678 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        
+        .translator-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .translator-body {
+            padding: 20px;
+        }
+        
+        .language-selectors {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .language-select {
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        .swap-btn {
+            background: var(--translator-btn-bg);
+            color: var(--translator-btn-text);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .swap-btn:hover {
+            background: #76cbcb;
+            transform: rotate(180deg);
+        }
+        
+        .text-input-container {
+            margin-bottom: 20px;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .translate-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--translator-btn-bg);
+            color: var(--translator-btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .translate-btn:hover {
+            background: #76cbcb;
+        }
+        
+        .translation-result {
+            background: #f8f9fa;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            min-height: 100px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+        
+        .close-translator {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .close-translator:hover {
+            background: #c0392b;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 80px 15px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+                flex-direction: column;
+            }
+            
+            .nav-btn-container {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .translator-section {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin: 15px auto 0;
+                width: calc(100% - 30px);
+                max-width: 100%;
+            }
+            
+            .form-section,
+            .back-office-content {
+                padding: 30px 20px;
+            }
+            
+            .form-grid,
+            .webswan-buttons-grid, 
+            .ai-questions-grid, 
+            .states-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .photo-preview {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .script-toggle-btn {
+                width: 100%;
+                padding: 15px;
+            }
+            
+            .script-container {
+                padding: 20px;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- APPLICATION FORM PAGE -->
+    <div id="formPage" class="page active">
+        <div class="container">
+            <div class="header">
+                <div class="nav-btn-container">
+                    <button type="button" onclick="showBackOffice()" class="nav-btn">
+                        <i class="fas fa-lock"></i> Back Office
+                    </button>
+                </div>
+                
+                <h1>
+                    <i class="fas fa-swan"></i>
+                    WebSwan Application
+                </h1>
+                <p>Complete this form to get started with our professional web development services</p>
+            </div>
+            
+            <div class="form-section">
+                <h2 class="form-title">Application Form</h2>
+                
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Form submitted successfully! We'll be in touch soon.
+                </div>
+                
+                <form id="applicationForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                            <div class="error-message" id="nameError">Please enter your name</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(123) 456-7890" required>
+                            <div class="error-message" id="phoneError">Please enter your phone number</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                        <div class="error-message" id="emailError">Please enter a valid email</div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="businessName">Business Name *</label>
+                            <input type="text" id="businessName" name="businessName" placeholder="Your business name" required>
+                            <div class="error-message" id="businessNameError">Please enter your business name</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="businessPhone">Business Phone <span class="optional-note">(optional)</span></label>
+                            <input type="tel" id="businessPhone" name="businessPhone" placeholder="(123) 456-7890">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasWebsite">Do you have a website?</label>
+                        <select id="hasWebsite" name="hasWebsite">
+                            <option value="no" selected>No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="websiteField" style="display: none;">
+                        <label for="website">Website URL *</label>
+                        <div class="website-field">
+                            <div class="website-prefix">https://www.</div>
+                            <input type="text" id="website" name="website" class="website-input" placeholder="yourwebsite.com">
+                        </div>
+                        <div class="error-message" id="websiteError">Please enter your website URL</div>
+                    </div>
+                    
+                    <div class="photo-upload-section">
+                        <h3><i class="fas fa-images"></i> Upload Photos for Slideshow</h3>
+                        
+                        <div class="photo-dimensions">
+                            <p><strong><i class="fas fa-info-circle"></i> Recommended dimensions:</strong> 1920x1080px (16:9 ratio) or 1280x720px for optimal slideshow display. Max file size: 5MB per image.</p>
+                        </div>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload photos or drag & drop</p>
+                            <span>Supports JPG, PNG, GIF</span>
+                        </div>
+                        
+                        <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                        
+                        <div class="photo-preview" id="photoPreview">
+                            <!-- Photos will appear here -->
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Application
+                    </button>
+                </form>
+            </div>
+            
+            <div class="footer">
+                <button type="button" onclick="showBackOffice()" class="footer-btn">
+                    <i class="fas fa-tools"></i> Access Back Office Resources
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- BACK OFFICE PAGE -->
+    <div id="backOfficePage" class="page">
+        <div class="container">
+            <div class="header">
+                <div class="nav-btn-container">
+                    <button type="button" onclick="showForm()" class="nav-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Form
+                    </button>
+                </div>
+                
+                <div class="translator-section">
+                    <h4><i class="fas fa-language"></i> Language Translator</h4>
+                    <button type="button" id="translatorToggle" class="translator-toggle">
+                        <i class="fas fa-globe"></i> Open Translator
+                    </button>
+                </div>
+                
+                <h1><i class="fas fa-swan"></i> WebSwan Back Office</h1>
+                <p>Professional scripts and resources for WebSwan services and client communication</p>
+            </div>
+            
+            <div class="back-office-content">
+                <!-- WebSwan Links Section -->
+                <section class="webswan-links-section">
+                    <h3><i class="fas fa-swan"></i> WebSwan Services & Reviews</h3>
+                    <p>Explore our premium web services and see what our clients are saying</p>
+                    
+                    <div class="webswan-buttons-grid">
+                        <div class="webswan-btn-container">
+                            <a href="https://www.webswanmedianetwork.com/pricing" target="_blank" class="webswan-btn pricing">
+                                <i class="fas fa-network-wired"></i> Media Network Pricing
+                            </a>
+                            <button type="button" class="copy-link-btn" onclick="copyLink('https://www.webswanmedianetwork.com/pricing', this)">
+                                <i class="far fa-copy"></i> Copy Link
+                            </button>
+                        </div>
+                        
+                        <div class="webswan-btn-container">
+                            <a href="https://www.thewebswan.com/pricing" target="_blank" class="webswan-btn pricing">
+                                <i class="fas fa-globe"></i> The WebSwan Pricing
+                            </a>
+                            <button type="button" class="copy-link-btn" onclick="copyLink('https://www.thewebswan.com/pricing', this)">
+                                <i class="far fa-copy"></i> Copy Link
+                            </button>
+                        </div>
+                        
+                        <div class="webswan-btn-container">
+                            <a href="https://www.webswan.com/reviews" target="_blank" class="webswan-btn reviews">
+                                <i class="fas fa-star"></i> WebSwan Reviews
+                            </a>
+                            <button type="button" class="copy-link-btn" onclick="copyLink('https://www.webswan.com/reviews', this)">
+                                <i class="far fa-copy"></i> Copy Link
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Script Section -->
+                <div class="script-section">
+                    <div class="script-header">
+                        <h3 class="script-title"><i class="fas fa-clipboard"></i> Opening Script & Conversation Flow</h3>
+                        <p style="margin-bottom: 15px;">Professional scripts for your marketing calls</p>
+                        <button type="button" class="script-toggle-btn" id="scriptToggleBtn">
+                            <i class="fas fa-book-open"></i> Show Script
+                        </button>
+                    </div>
+                    
+                    <div id="scriptContainer" class="script-container">
+                        <div class="script-content">
+                            <div class="script-category">
+                                <h4><i class="fas fa-microphone"></i> Introduction – Marketing Director of WebSwan</h4>
+                                <p>"Hi, this is [Marketing Director] I'm the Marketing Director with WebSwan Digital Solutions."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Questions Collapsible Section -->
+                <section class="ai-collapsible-section">
+                    <div class="ai-collapsible-header" onclick="toggleAIQuestions()">
+                        <h3><i class="fas fa-robot"></i> Questions to Ask AI Assistants</h3>
+                        <span id="aiCollapsibleArrow">▼</span>
+                    </div>
+                    
+                    <div id="aiCollapsibleContent" class="ai-collapsible-content">
+                        <div style="padding: 25px; background: white; border-radius: 0 0 8px 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-top: 10px;">
+                            <p style="color: #666; margin-bottom: 20px; font-size: 1rem;">Use these questions with AI assistants like ChatGPT or Gemini:</p>
+                            
+                            <div class="ai-questions-grid">
+                                <div class="ai-question-card" onclick="copyQuestion(this)">
+                                    <h4><i class="fas fa-code"></i> Custom vs Template</h4>
+                                    <p>"What is the difference between a custom web design and a template website?"</p>
+                                </div>
+                                
+                                <div class="ai-question-card" onclick="copyQuestion(this)">
+                                    <h4><i class="fas fa-briefcase"></i> Business Website</h4>
+                                    <p>"Why is it important to have a website now if you have a business?"</p>
+                                </div>
+                                
+                                <div class="ai-question-card" onclick="copyQuestion(this)">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Template Limitations</h4>
+                                    <p>"Why template websites are not good for professionals?"</p>
+                                </div>
+                                
+                                <div class="ai-question-card" onclick="copyQuestion(this)">
+                                    <h4><i class="fas fa-balance-scale"></i> Website Compliance</h4>
+                                    <p>"What is website compliance and why should I have a compliant website?"</p>
+                                </div>
+                                
+                                <div class="ai-question-card" onclick="copyQuestion(this)">
+                                    <h4><i class="fas fa-gavel"></i> Compliance Consequences</h4>
+                                    <p>"What are the consequences if my website is not in compliance?"</p>
+                                </div>
+                                
+                                <div class="ai-question-card" onclick="copyQuestion(this)">
+                                    <h4><i class="fas fa-dollar-sign"></i> Custom Design Cost</h4>
+                                    <p>"Why does custom web design cost more than template design?"</p>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 25px; padding: 15px; background: #e8f5e9; border-radius: 6px;">
+                                <h4 style="color: #2e7d32; margin-bottom: 10px; font-size: 1.1rem;">
+                                    <i class="fas fa-lightbulb"></i> How to Use These Questions
+                                </h4>
+                                <p style="color: #555; font-size: 0.95rem; line-height: 1.6; margin: 0;">
+                                    Click any question to copy it, then paste into ChatGPT or Gemini for professional answers.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- States Compliance Section -->
+                <section class="states-compliance-section">
+                    <h3><i class="fas fa-balance-scale"></i> State Website Compliance</h3>
+                    <p style="color: #666; margin-bottom: 20px;">State compliance requirements for websites</p>
+                    
+                    <div class="states-grid">
+                        <div class="state-card">
+                            <h4><i class="fas fa-sun"></i> Florida</h4>
+                            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Florida compliance requirements</p>
+                            <a href="#" class="state-compliance-btn">
+                                <i class="fas fa-external-link-alt"></i> Florida Compliance
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="footer">
+                <button type="button" onclick="showForm()" class="footer-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Application Form
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Translator Modal -->
+    <div id="translatorModal" class="translator-modal">
+        <div class="translator-modal-content">
+            <div class="translator-header">
+                <h3><i class="fas fa-globe"></i> Language Translator</h3>
+                <p>Real-time translation for multiple languages</p>
+            </div>
+            
+            <div class="translator-body">
+                <div class="language-selectors">
+                    <select id="sourceLanguage" class="language-select">
+                        <option value="en">English</option>
+                        <option value="ht">Haitian Creole</option>
+                        <option value="es">Spanish</option>
+                    </select>
+                    
+                    <button type="button" id="swapLanguages" class="swap-btn">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    
+                    <select id="targetLanguage" class="language-select">
+                        <option value="ht">Haitian Creole</option>
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                    </select>
+                </div>
+                
+                <div class="text-input-container">
+                    <textarea id="textToTranslate" class="text-input" placeholder="Enter text to translate" maxlength="500"></textarea>
+                    <div class="char-counter"><span id="charCount">0</span> / 500</div>
+                </div>
+                
+                <button type="button" id="translateBtn" class="translate-btn">
+                    <i class="fas fa-language"></i> Translate Now
+                </button>
+                
+                <div class="translation-result" id="translationResult">
+                    Translation will appear here...
+                </div>
+                
+                <button type="button" id="copyTranslation" class="copy-btn">
+                    <i class="far fa-copy"></i> Copy Translation
+                </button>
+                
+                <button type="button" id="closeTranslator" class="close-translator">
+                    <i class="fas fa-times"></i> Close Translator
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let uploadedPhotos = [];
+        
+        // Page switching functions
+        function showBackOffice() {
+            document.getElementById('formPage').classList.remove('active');
+            document.getElementById('backOfficePage').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+        
+        function showForm() {
+            document.getElementById('backOfficePage').classList.remove('active');
+            document.getElementById('formPage').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('WebSwan Application loaded');
+            
+            // Website field toggle
+            const hasWebsite = document.getElementById('hasWebsite');
+            const websiteField = document.getElementById('websiteField');
+            
+            hasWebsite.addEventListener('change', function() {
+                if (this.value === 'yes') {
+                    websiteField.style.display = 'block';
+                    document.getElementById('website').required = true;
+                } else {
+                    websiteField.style.display = 'none';
+                    document.getElementById('website').required = false;
+                    document.getElementById('website').value = '';
+                }
+            });
+            
+            // File upload handling
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#667eea';
+                this.style.background = 'rgba(102, 126, 234, 0.1)';
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#adb5bd';
+                this.style.background = 'white';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#adb5bd';
+                this.style.background = 'white';
+                
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+            
+            // Form submission
+            const form = document.getElementById('applicationForm');
+            form.addEventListener('submit', handleSubmit);
+            
+            // Load saved data
+            loadFromLocalStorage();
+            
+            // Script toggle
+            const scriptToggleBtn = document.getElementById('scriptToggleBtn');
+            const scriptContainer = document.getElementById('scriptContainer');
+            
+            if (scriptToggleBtn && scriptContainer) {
+                scriptToggleBtn.addEventListener('click', function() {
+                    if (scriptContainer.classList.contains('visible')) {
+                        scriptContainer.classList.remove('visible');
+                        scriptToggleBtn.innerHTML = '<i class="fas fa-book-open"></i> Show Script';
+                    } else {
+                        scriptContainer.classList.add('visible');
+                        scriptToggleBtn.innerHTML = '<i class="fas fa-book"></i> Hide Script';
+                    }
+                });
+            }
+            
+            // Translator functionality
+            const translatorToggle = document.getElementById('translatorToggle');
+            const translatorModal = document.getElementById('translatorModal');
+            const closeTranslator = document.getElementById('closeTranslator');
+            const swapLanguages = document.getElementById('swapLanguages');
+            const textToTranslate = document.getElementById('textToTranslate');
+            const charCount = document.getElementById('charCount');
+            
+            if (translatorToggle) {
+                translatorToggle.addEventListener('click', function() {
+                    translatorModal.classList.add('active');
+                });
+            }
+            
+            if (closeTranslator) {
+                closeTranslator.addEventListener('click', function() {
+                    translatorModal.classList.remove('active');
+                });
+            }
+            
+            if (translatorModal) {
+                translatorModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        translatorModal.classList.remove('active');
+                    }
+                });
+            }
+            
+            if (swapLanguages) {
+                swapLanguages.addEventListener('click', function() {
+                    const source = document.getElementById('sourceLanguage');
+                    const target = document.getElementById('targetLanguage');
+                    const temp = source.value;
+                    source.value = target.value;
+                    target.value = temp;
+                });
+            }
+            
+            if (textToTranslate && charCount) {
+                textToTranslate.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+            
+            // Translate button
+            const translateBtn = document.getElementById('translateBtn');
+            if (translateBtn) {
+                translateBtn.addEventListener('click', function() {
+                    const text = textToTranslate.value;
+                    const resultDiv = document.getElementById('translationResult');
+                    
+                    if (!text.trim()) {
+                        resultDiv.textContent = 'Please enter text to translate';
+                        return;
+                    }
+                    
+                    resultDiv.textContent = 'Translation feature requires API integration. Text to translate: ' + text;
+                });
+            }
+            
+            // Copy translation button
+            const copyTranslation = document.getElementById('copyTranslation');
+            if (copyTranslation) {
+                copyTranslation.addEventListener('click', function() {
+                    const resultDiv = document.getElementById('translationResult');
+                    const text = resultDiv.textContent;
+                    
+                    navigator.clipboard.writeText(text).then(function() {
+                        const originalText = copyTranslation.innerHTML;
+                        copyTranslation.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        setTimeout(function() {
+                            copyTranslation.innerHTML = originalText;
+                        }, 2000);
+                    });
+                });
+            }
+            
+            // Initialize AI collapsible
+            const aiContent = document.getElementById('aiCollapsibleContent');
+            if (aiContent) {
+                aiContent.style.maxHeight = '0';
+            }
+        });
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+            e.target.value = '';
+        }
+        
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload only image files');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large. Maximum size is 5MB`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const photoData = {
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        data: e.target.result,
+                        type: file.type,
+                        size: file.size
+                    };
+                    
+                    uploadedPhotos.push(photoData);
+                    updatePhotoPreview();
+                    saveToLocalStorage();
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function updatePhotoPreview() {
+            const photoPreview = document.getElementById('photoPreview');
+            
+            if (uploadedPhotos.length === 0) {
+                photoPreview.innerHTML = '<p style="color:#999; width:100%; text-align:center; padding:20px;">No photos uploaded yet</p>';
+                return;
+            }
+            
+            photoPreview.innerHTML = '';
+            
+            uploadedPhotos.forEach((photo, index) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                previewItem.innerHTML = `
+                    <img src="${photo.data}" alt="${photo.name}">
+                    <button type="button" class="remove-btn" onclick="removePhoto(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                photoPreview.appendChild(previewItem);
+            });
+        }
+        
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            updatePhotoPreview();
+            saveToLocalStorage();
+        }
+        
+        function validateForm() {
+            let isValid = true;
+            
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            const requiredFields = [
+                { id: 'name', errorId: 'nameError' },
+                { id: 'phone', errorId: 'phoneError' },
+                { id: 'email', errorId: 'emailError' },
+                { id: 'businessName', errorId: 'businessNameError' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field.id);
+                if (!input.value.trim()) {
+                    document.getElementById(field.errorId).style.display = 'block';
+                    isValid = false;
+                }
+            });
+            
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                const emailError = document.getElementById('emailError');
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.style.display = 'block';
+                isValid = false;
+            }
+            
+            const hasWebsite = document.getElementById('hasWebsite').value;
+            if (hasWebsite === 'yes') {
+                const website = document.getElementById('website').value;
+                if (!website.trim()) {
+                    document.getElementById('websiteError').style.display = 'block';
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+        
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            saveToLocalStorage();
+            
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Submitted Successfully';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+            }, 3000);
+        }
+        
+        function saveToLocalStorage() {
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                businessName: document.getElementById('businessName').value,
+                businessPhone: document.getElementById('businessPhone').value,
+                hasWebsite: document.getElementById('hasWebsite').value,
+                website: document.getElementById('website').value,
+                photos: uploadedPhotos,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('webswanApplication', JSON.stringify(formData));
+        }
+        
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('webswanApplication');
+            
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('email').value = data.email || '';
+                    document.getElementById('phone').value = data.phone || '';
+                    document.getElementById('businessName').value = data.businessName || '';
+                    document.getElementById('businessPhone').value = data.businessPhone || '';
+                    document.getElementById('hasWebsite').value = data.hasWebsite || 'no';
+                    document.getElementById('website').value = data.website || '';
+                    
+                    if (data.photos && Array.isArray(data.photos)) {
+                        uploadedPhotos = data.photos;
+                        updatePhotoPreview();
+                    }
+                    
+                    if (data.hasWebsite === 'yes') {
+                        document.getElementById('websiteField').style.display = 'block';
+                        document.getElementById('website').required = true;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                }
+            }
+        }
+        
+        // AI Questions Collapsible
+        function toggleAIQuestions() {
+            const content = document.getElementById('aiCollapsibleContent');
+            const arrow = document.getElementById('aiCollapsibleArrow');
+            
+            if (!content || !arrow) return;
+            
+            if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = '0';
+                arrow.textContent = '▼';
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                arrow.textContent = '▲';
+            }
+        }
+        
+        // Copy question function
+        function copyQuestion(card) {
+            const questionText = card.querySelector('p').textContent;
+            
+            navigator.clipboard.writeText(questionText).then(function() {
+                const originalBorder = card.style.borderLeftColor;
+                card.style.borderLeftColor = '#4caf50';
+                card.style.backgroundColor = '#e8f5e9';
+                
+                setTimeout(function() {
+                    card.style.borderLeftColor = originalBorder;
+                    card.style.backgroundColor = '#f8f9fa';
+                }, 1000);
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+                alert('Question copied: ' + questionText);
+            });
+        }
+        
+        // Copy link function
+        function copyLink(url, button) {
+            navigator.clipboard.writeText(url).then(function() {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.style.background = '#27ae60';
+                
+                setTimeout(function() {
+                    button.innerHTML = originalHTML;
+                    button.style.background = '';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+                alert('Link copied: ' + url);
+            });
+        }
+    </script>
+</body>
+</html>
